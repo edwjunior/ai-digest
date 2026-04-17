@@ -11,11 +11,6 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 # Claude model
 CLAUDE_MODEL = "claude-sonnet-4-6"
 
-# Schedule: day_of_week "wed,sun", hour and minute (24h format, local time)
-SCHEDULE_DAYS = "wed,sun"
-SCHEDULE_HOUR = 9
-SCHEDULE_MINUTE = 0
-
 # How many articles to fetch per feed and how many to keep after filtering
 ARTICLES_PER_FEED = 5
 MAX_ARTICLES_TOTAL = 20
