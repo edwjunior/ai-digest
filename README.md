@@ -1,106 +1,102 @@
 # ai-digest-bot
 
-AI-powered bot that curates tech & AI news and delivers a personalized Spanish newsletter + LinkedIn post templates via Telegram, twice a week.
+AI-powered bot that curates tech & AI news and delivers a personalized Spanish newsletter via Telegram, twice a week.
 
-## ¿Qué hace?
+## What it does
 
-- Recopila noticias de tecnología e IA desde fuentes RSS cada miércoles y domingo
-- Filtra y prioriza noticias con **impacto cotidiano** para el usuario final (no noticias técnicas ni académicas)
-- Genera con Claude una **newsletter en español** lista para leer
-- Genera **plantillas de posts para LinkedIn** con tono informal y opinión personal
-- Envía todo por **Telegram** automáticamente a las 9:00h
+- Fetches tech and AI news from RSS feeds every Wednesday and Sunday
+- Filters and prioritizes news with **real-world impact** for end users (no academic or purely technical articles)
+- Uses Claude to generate a **newsletter in Spanish** ready to read
+- Delivers everything via **Telegram** automatically at 9:00 AM
 
-## Requisitos
+## Requirements
 
 - Python 3.11+
-- API Key de Anthropic (Claude) — [console.anthropic.com](https://console.anthropic.com)
-- Bot de Telegram + Chat ID
+- Anthropic API Key (Claude) — [console.anthropic.com](https://console.anthropic.com)
+- Telegram Bot + Chat ID
 
-## Instalación
+## Installation
 
 ```bash
-# 1. Clona o descarga el proyecto
+# 1. Clone or download the project
 cd ai-digest-bot
 
-# 2. Crea un entorno virtual
+# 2. Create a virtual environment
 python -m venv venv
 source venv/bin/activate        # Linux/Mac
 venv\Scripts\activate           # Windows
 
-# 3. Instala dependencias
+# 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Configura las variables de entorno
+# 4. Set up environment variables
 cp .env.example .env
-# Edita .env con tu editor y rellena los tres valores
+# Edit .env and fill in the three values
 ```
 
-## Variables de entorno (`.env`)
+## Environment variables (`.env`)
 
-| Variable | Descripción |
+| Variable | Description |
 |---|---|
-| `ANTHROPIC_API_KEY` | API Key de Anthropic |
-| `TELEGRAM_BOT_TOKEN` | Token del bot de Telegram (de @BotFather) |
-| `TELEGRAM_CHAT_ID` | ID del chat donde se enviarán los mensajes |
+| `ANTHROPIC_API_KEY` | Anthropic API Key |
+| `TELEGRAM_BOT_TOKEN` | Telegram bot token (from @BotFather) |
+| `TELEGRAM_CHAT_ID` | ID of the chat where messages will be sent |
 
-### Obtener el Telegram Chat ID
+### Getting the Telegram Chat ID
 
-1. Inicia una conversación con tu bot en Telegram.
-2. Visita: `https://api.telegram.org/bot<TU_TOKEN>/getUpdates`
-3. Busca el campo `"chat": {"id": ...}` — ese número es tu `TELEGRAM_CHAT_ID`.
+1. Start a conversation with your bot on Telegram.
+2. Visit: `https://api.telegram.org/bot<YOUR_TOKEN>/getUpdates`
+3. Look for the `"chat": {"id": ...}` field — that number is your `TELEGRAM_CHAT_ID`.
 
-## Configuración (`config.py`)
+## Configuration (`config.py`)
 
-| Variable | Descripción | Default |
+| Variable | Description | Default |
 |---|---|---|
-| `SCHEDULE_DAYS` | Días de envío | `"wed,sun"` |
-| `SCHEDULE_HOUR` | Hora de envío (24h, zona Madrid) | `9` |
-| `ARTICLES_PER_FEED` | Artículos máximos por feed | `5` |
-| `MAX_ARTICLES_TOTAL` | Artículos totales tras filtrar | `20` |
-| `LINKEDIN_POSTS_COUNT` | Plantillas LinkedIn por envío | `3` |
-| `RSS_FEEDS` | Fuentes RSS agrupadas por categoría | ver abajo |
-| `TOPICS_OF_INTEREST` | Temas que Claude priorizará | ver abajo |
+| `ARTICLES_PER_FEED` | Max articles fetched per feed | `5` |
+| `MAX_ARTICLES_TOTAL` | Total articles kept after filtering | `20` |
+| `LINKEDIN_POSTS_COUNT` | LinkedIn post templates per run | `3` |
+| `RSS_FEEDS` | RSS sources grouped by category | see below |
+| `TOPICS_OF_INTEREST` | Topics Claude will prioritize | see below |
 
-### Fuentes RSS por defecto
+### Default RSS sources
 
-| Categoría | Fuentes |
+| Category | Sources |
 |---|---|
-| IA para el consumidor | OpenAI Blog, The Verge, TechCrunch |
-| Tech cotidiana | CNET, Wired, Ars Technica |
-| Productividad & Herramientas IA | Lifehacker, Zapier Blog, Hugging Face |
+| Consumer AI | OpenAI Blog, The Verge, TechCrunch |
+| Everyday tech | CNET, Wired, Ars Technica |
+| Productivity & AI tools | Lifehacker, Zapier Blog, Hugging Face |
 | Hacker News | Hacker News RSS |
 
-### Criterio de selección de noticias
+### Article selection criteria
 
-Claude filtra activamente para incluir solo noticias donde el usuario final ve un beneficio concreto e inmediato:
-- Nuevas funciones de IA en apps conocidas (Google, Apple, Meta, ChatGPT...)
-- IA aplicada a salud, educación, trabajo, hogar o entretenimiento
-- Herramientas de productividad con IA para no técnicos
+Claude actively filters to include only news where the end user sees a concrete and immediate benefit:
+- New AI features in well-known apps (Google, Apple, Meta, ChatGPT...)
+- AI applied to health, education, work, home, or entertainment
+- AI productivity tools for non-technical users
 
-Se descartan: papers académicos, benchmarks, mejoras de infraestructura y jerga técnica.
+Excluded: academic papers, benchmarks, infrastructure improvements, and technical jargon.
 
-## Uso
+## Scheduling
 
-```bash
-# Prueba puntual (ejecuta el pipeline ahora mismo)
-python main.py --now
+The pipeline runs automatically via **GitHub Actions** every Wednesday and Sunday at 08:00 UTC (09:00 CET / 10:00 CEST). No server required.
 
-# Modo scheduler (ejecuta automáticamente miércoles y domingos a las 9:00h)
-python main.py
-```
+To trigger it manually: go to **Actions → Newsletter Digest → Run workflow** in GitHub.
 
-## Estructura del proyecto
+## Project structure
 
 ```
 .
-├── main.py                 # Orquestador + scheduler (APScheduler)
-├── config.py               # Toda la configuración en un sitio
+├── main.py                 # Pipeline orchestrator
+├── config.py               # All configuration in one place
 ├── requirements.txt
-├── .env.example            # Plantilla de variables de entorno
+├── .env.example            # Environment variables template
+├── .github/
+│   └── workflows/
+│       └── newsletter.yml  # GitHub Actions cron schedule
 ├── sources/
-│   └── rss_fetcher.py      # Fetch de artículos RSS (últimos 7 días)
+│   └── rss_fetcher.py      # RSS article fetcher (last 7 days)
 ├── ai/
-│   └── content_gen.py      # Generación de newsletter y posts con Claude
+│   └── content_gen.py      # Newsletter generation with Claude
 └── delivery/
-    └── telegram_bot.py     # Envío por Telegram Bot API
+    └── telegram_bot.py     # Telegram Bot API delivery
 ```

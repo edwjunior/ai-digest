@@ -1,7 +1,6 @@
 import feedparser
 import httpx
 from datetime import datetime, timezone, timedelta
-from typing import Optional
 from config import RSS_FEEDS, ARTICLES_PER_FEED, MAX_ARTICLES_TOTAL
 
 
@@ -38,7 +37,7 @@ def _fetch_feed(url: str, topic: str, max_age_days: int = 7) -> list[dict]:
             summary = summary[:500] + "..." if len(summary) > 500 else summary
 
             articles.append({
-                "title": getattr(entry, "title", "Sin título").strip(),
+                "title": getattr(entry, "title", "No title").strip(),
                 "url": getattr(entry, "link", ""),
                 "summary": summary,
                 "published": pub_date.strftime("%d/%m/%Y"),
